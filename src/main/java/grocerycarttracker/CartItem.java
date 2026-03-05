@@ -17,9 +17,11 @@ public class CartItem {
 	   }
 
 	   public String toString() {
-	       return item.getName() + " | $" + item.getPrice() +
-	              " | Qty: " + quantity +
-	              " | Total: $" + getTotalPrice();
+		   return "Item: " + item.getName() +
+		           "\nPrice: $" + item.getPrice() +
+		           "\nQuantity: " + quantity +
+		           "\nTotal: $" + getTotalPrice() +
+		           "\n---------------------";
 	   }
 
 
