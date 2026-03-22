@@ -1,119 +1,164 @@
 package grocerycarttracker;
-import java.util.Scanner;
+
+import java.util.ArrayList;
+import java.util.Scanner; 
+
 
 public class GroceryCartTrackerMain {
+	static class Item { 
 
-	private ShoppingCart cart;
-    private Budget budget;
-    private Menu menu;
-    private InputValidator validator;
-    private Scanner scanner;
+		String name; 
+		double price; 
+		int quantity; 
 
-    public GroceryCartTrackerMain() {
-        cart = new ShoppingCart();
-        budget = new Budget();
-        menu = new Menu();
-        validator = new InputValidator();
-        scanner = new Scanner(System.in);
-    }
+	
 
-    public static void main(String[] args) {
-        GroceryCartTrackerMain app = new GroceryCartTrackerMain();
-        app.run();
-    }
+	Item(String name, double price, int quantity) { 
 
-    public void run() {
+		this.name = name; 
 
-        int choice;
+		this.price = price; 
 
-        do {
+		this.quantity = quantity; 
 
-            menu.display();
-            choice = validator.getValidInt(scanner);
+		} 
 
-            switch (choice) {
+		 
 
-                case 1:
-                    addItem();
-                    break;
+		double total() { 
 
-                case 2:
-                    removeItem();
-                    break;
+		return price * quantity; 
 
-                case 3:
-                    cart.viewCart();
-                    break;
+		} 
 
-                case 4:
-                    setBudget();
-                    break;
+	} 
 
-                case 5:
-                    checkout();
-                    break;
+		 
 
-                case 6:
-                    System.out.println("Exiting program...");
-                    break;
+	public static void main(String[] args) { 
 
-                default:
-                    System.out.println("Invalid option.");
-            }
+	Scanner scanner = new Scanner(System.in); 
 
-        } while (choice != 6);
-    }
+		ArrayList<Item> cart = new ArrayList<>(); 
 
-    private void addItem() {
+		double budget, taxRate, runningTotal = 0; 
 
-        scanner.nextLine(); // clear buffer before reading text
+		 
 
-        System.out.print("Enter item name: ");
-        String name = scanner.nextLine();
+		System.out.println("Welcome to Grocery Cart Tracker!"); 
 
-        System.out.print("Enter price: ");
-        double price = validator.getValidDouble(scanner);
+		System.out.print("Enter your budget: $"); 
 
-        System.out.print("Enter quantity: ");
-        int quantity = validator.getValidInt(scanner);
+		budget = scanner.nextDouble(); 
 
-        scanner.nextLine(); // clear buffer again
+		 
 
-        System.out.print("Enter category: ");
-        String category = scanner.nextLine();
+		System.out.print("Enter tax rate (as a percentage, e.g., 7.5): "); 
 
-        Item item = new Item(name, price, category);
-        CartItem cartItem = new CartItem(item, quantity);
+		taxRate = scanner.nextDouble() / 100.0; 
 
-        cart.addItem(cartItem);
+		 
 
-        System.out.println("Item added successfully.");
-    }
+		scanner.nextLine(); 
 
-    private void removeItem() {
+		 
 
-        scanner.nextLine();
+		while (true) { 
 
-        System.out.print("Enter item name to remove: ");
-        String name = scanner.nextLine();
+			System.out.print("Enter item name (or 'done' to finish): "); 
 
-        cart.removeItem(name);
-    }
+			String name = scanner.nextLine();  
 
-    private void setBudget() {
+		 
 
-        System.out.print("Enter budget amount: ");
-        double amount = validator.getValidDouble(scanner);
+		if (name.equalsIgnoreCase("done")) break; 
 
-        budget.setBudget(amount);
+		 
 
-        System.out.println("Budget set.");
-    }
+		System.out.print("Enter item price: $"); 
 
-    private void checkout() {
+		double price = scanner.nextDouble(); 
 
-        Receipt receipt = new Receipt(new TaxCalculator());
-        receipt.printReceipt(cart, budget);
-    }
+		 
+
+		System.out.print("Enter quantity: "); 
+
+		int quantity = scanner.nextInt(); 
+
+		 
+
+		scanner.nextLine();  
+
+		 
+
+		Item item = new Item(name, price, quantity); 
+
+		cart.add(item); 
+
+		runningTotal += item.total(); 
+
+		 
+
+		double totalWithTax = runningTotal * (1 + taxRate); 
+
+		 
+
+		if (totalWithTax > budget) { 
+
+		System.out.println("WARNING: You have exceeded your budget!"); 
+
+		} else { 
+
+		System.out.printf("Current total with tax: $%.2f\n", totalWithTax); 
+
+		} 
+
+	} 
+
+		 
+
+		System.out.println("\n**********************************"); 
+
+		System.out.println(" GROCERY RECEIPT "); 
+
+		System.out.println("**********************************"); 
+
+		 
+
+		for (Item item : cart) { 
+
+		System.out.printf("%-20s %2dx $%.2f = $%.2f\n", 
+
+		item.name, item.quantity, item.price, item.total()); 
+
+		} 
+
+		 
+
+		double subtotal = runningTotal; 
+
+		double taxAmount = subtotal * taxRate; 
+
+		double finalTotal = subtotal + taxAmount; 
+
+		 
+
+		System.out.println("----------------------------------"); 
+
+		System.out.printf("Subtotal: $%.2f\n", subtotal); 
+
+		System.out.printf("Tax: $%.2f\n", taxAmount); 
+
+		System.out.printf("Total: $%.2f\n", finalTotal); 
+
+		System.out.printf("Budget Remaining: $%.2f\n", budget - finalTotal); 
+
+		System.out.println("**********************************"); 
+
+		 
+
+		scanner.close(); 
+
+		} 
+
 }
-
